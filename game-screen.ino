@@ -10,13 +10,13 @@ byte ySelect;
 byte maxSelect;
 byte movesMade;
 boolean isSolved = false;
+boolean isConfirmDialogShown = false;
 
-#define shapeX 1
+#define shapeX 4
 #define shapeY 1
 #define cellPadding 2
-#define previewCellPadding 1
+#define previewCellPadding 0
 #define previewCellSize 9
-#define previewLocation 74
 
 void gameScreen_loop() {
   arduboy.digitalWriteRGB(GREEN_LED, RGB_OFF);
@@ -25,7 +25,11 @@ void gameScreen_loop() {
   drawLevelInfo();
     
   if (isSolved) {
+    handleSolvedButtons();
     drawSolvedDialog();
+  } else if (isConfirmDialogShown) {
+    handleExitDialogButtons();
+    drawExitDialog();
   } else {
     handleGameButtons();
     drawMoves();
@@ -39,28 +43,23 @@ void prepareLevel(byte levelIndex) {
   movesMade = 0;
   isSolved = false;
 
-  switch (levelIndex) {
-    case 1: level = level1; break;
-    case 2: level = level2; break;
-    case 3: level = level3; break;
-    case 4: level = level4; break;
-    case 5: level = level5; break;
-  }
-
+  memcpy_P(&level, &levels[levelIndex], sizeof(game_level));
   memcpy(hashedShape, level.hashedShape, sizeof(level.hashedShape[0])*25);
 }
 
 void drawMoves() {
-  arduboy.setCursor(70, 57);
+  arduboy.setCursor(74, 57);
   arduboy.print("Moves: " + String(movesMade));
 }
 
 void drawLevelInfo() {
-  arduboy.setCursor(70, 46);
+  arduboy.setCursor(74, 48);
   arduboy.print("Level: " + String(actualLevelIndex));
 }
 
 void drawLevel() {
+  byte previewLocation = 74;
+
   switch (level.levelSize) {
     case 4:
       cellSize = 14;
@@ -73,7 +72,10 @@ void drawLevel() {
   }
   
   drawShape(hashedShape, level.levelSize, shapeX, shapeY, cellSize, cellPadding);
+
   drawShape(level.correctShape, level.levelSize, previewLocation, shapeY, previewCellSize, previewCellPadding);
+
+  arduboy.drawLine(70, 0, 70, 68);
 
   arduboy.drawRect(
     (shapeX + (xSelect * (cellSize + cellPadding)) - 1), 
@@ -115,10 +117,32 @@ void drawShape(byte shape[], byte levelSize, byte left, byte top, byte cellSize,
 
 void drawSolvedDialog() {
   arduboy.fillRoundRect(10, 10, 112, 48, 4);
-  arduboy.setCursor(14, 14);
+  arduboy.setCursor(15, 15);
   arduboy.setTextColor(BLACK);
   arduboy.setTextBackground(WHITE);
-  arduboy.print("Level 1, Solved! 3 stars!"); 
+  
+  arduboy.print("Solved!");
+  
+  short starX = 15;
+  byte starY = 32;
+
+  byte starsNumber;
+
+  if (movesMade <= level.stars[0]) {
+    starsNumber = 3;
+  } else if (movesMade <= level.stars[1]) {
+    starsNumber = 2;
+  } else {
+    starsNumber = 1;
+  }
+  
+  char *secondStar = starsNumber > 1 ? starFilled : starEmpty;
+  char *thirdStar = starsNumber > 2 ? starFilled : starEmpty;
+    
+  arduboy.drawBitmap(starX + 3, starY, starFilled, ICON_SIZE, ICON_SIZE, BLACK);
+  arduboy.drawBitmap(starX + 22, starY, secondStar, ICON_SIZE, ICON_SIZE, BLACK);
+  arduboy.drawBitmap(starX + 41, starY, thirdStar, ICON_SIZE, ICON_SIZE, BLACK);
+  
   arduboy.setTextBackground(BLACK);
   arduboy.setTextColor(WHITE);
 }
@@ -146,23 +170,67 @@ boolean isShapeCorrect() {
   return true;
 }
 
+void drawExitDialog() {
+  arduboy.fillRoundRect(10, 10, 112, 48, 4);
+  arduboy.setCursor(15, 15);
+  arduboy.setTextColor(BLACK);
+  arduboy.setTextBackground(WHITE);
+  
+  arduboy.print("Exit level?");
+  arduboy.setCursor(15, 44);
+  arduboy.print("Yes(A)");
+  arduboy.setCursor(66, 44);
+  arduboy.print("No(B)");
+  
+  arduboy.setTextBackground(BLACK);
+  arduboy.setTextColor(WHITE);
+}
+
+void handleSolvedButtons() {
+  // A button is exiting to level select
+  if (arduboy.justPressed(A_BUTTON) || arduboy.justPressed(B_BUTTON)) {
+    currentScreen = level_select_screen;
+  }
+}
+
+void handleExitDialogButtons() {
+  // A button is exiting to level select
+  if (arduboy.justPressed(A_BUTTON)) {
+    isConfirmDialogShown = false;
+    currentScreen = level_select_screen;
+  } else if (arduboy.justPressed(B_BUTTON)) {
+    isConfirmDialogShown = false;
+  }
+}
+
 void handleGameButtons() {
 
-  // A button is exiting to menu
+  // A button is exiting to level select
   if (arduboy.justPressed(A_BUTTON)) {
-    // TODO: Exit with confirmation
+    if (isSolved) {
+      currentScreen = level_select_screen;
+    } else {
+      isConfirmDialogShown = true;
+    }
   }
 
   // B button is rotating
   if (arduboy.justPressed(B_BUTTON)) {
-    //beep.tone(beep.freq(523.251), 1);
-    rotateSelection();
-
-    if (isShapeCorrect()) {
-      isSolved = true;
-      arduboy.digitalWriteRGB(GREEN_LED, RGB_ON);
+    if (isSolved) {
+      currentScreen = level_select_screen;
     } else {
-      movesMade = movesMade + 1;
+      if (isAudioOn()) {
+        //beep.tone(beep.freq(523.251), 1);
+      }
+      rotateSelection();
+  
+      if (isShapeCorrect()) {
+        isSolved = true;
+        arduboy.digitalWriteRGB(GREEN_LED, RGB_ON);
+        saveLevelMoves(actualLevelIndex + 1, movesMade);
+      } else {
+        movesMade = movesMade + 1;
+      }
     }
   }
 

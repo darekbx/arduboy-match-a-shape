@@ -12,8 +12,14 @@
 
 #define menuItems 3
 byte menuSelection = 0;
+bool leftMenu = false; 
 
 void menuScreen_loop() {
+  if (leftMenu) {
+    menuSelection = 0;
+    leftMenu = false;
+  }
+  
   handleMenuButtons();
   
   drawCenterText("Start", 14, menuSelection == 0);
@@ -24,9 +30,7 @@ void menuScreen_loop() {
 void confirmMenuSelection() {
   switch (menuSelection) {
     case 0:
-      prepareLevel(2);
-      // TODO should be: level_select_screen
-      currentScreen = game_screen;
+      currentScreen = level_select_screen;
       break;
     case 1:
       currentScreen = how_to_play_screen;
@@ -35,7 +39,7 @@ void confirmMenuSelection() {
       currentScreen = settings_screen;
       break;
   }
-  menuSelection = 0;
+  leftMenu = true;
 }
 
 void handleMenuButtons() {

@@ -1,16 +1,17 @@
 #include <Arduboy2.h>
-#include "game_levels.h"
+#include "game-assets.h"
 
 #define SERIAL_ENABLED false
+#define ALL_LEVELS_UNLOCKED false
 
 Arduboy2 arduboy;
 BeepPin1 beep;
 
 /*
  * TODO:
+ *  - add boot logo
+ *  - add background animated logo for menu screen
  *  - beep on rotate
- *  - green light on correct result
- *  - count solved
  */
 
 enum matchTheShapeScreen {
@@ -20,7 +21,6 @@ enum matchTheShapeScreen {
   how_to_play_screen,
   settings_screen
 };
-
 
 matchTheShapeScreen currentScreen = menu_screen;
 
