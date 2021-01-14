@@ -10,8 +10,6 @@ BeepPin1 beep;
 /*
  * TODO:
  *  - add boot logo
- *  - add background animated logo for menu screen
- *  - beep on rotate
  */
 
 enum matchTheShapeScreen {
@@ -29,6 +27,7 @@ void setup() {
     Serial.begin(9600);
     while (!Serial) { }
     Serial.println("Serial Ready");
+    debugFreeRam();
     #endif
 
   arduboy.boot();
@@ -70,6 +69,26 @@ void loop() {
   arduboy.display();
 }
 
+void switchToSelectLevelScreen() {
+  levelSelectScreen_setup();
+  currentScreen = level_select_screen;  
+}
+
+void switchToGameScreen() {
+  gameScreen_setup();
+  currentScreen = game_screen;  
+}
+
+void switchToSettingsScreen() {
+  settingsScreen_setup();
+  currentScreen = settings_screen;
+}
+
+void switchToHowToPlayScreen() {
+  howToPlayScreen_setup();
+  currentScreen = how_to_play_screen;
+}
+
 void drawCenterText(String text, int yPosition, boolean isSelected) {
   const byte CHAR_WIDTH = 6;
   const byte CHAR_HEIGHT = 8;
@@ -80,12 +99,29 @@ void drawCenterText(String text, int yPosition, boolean isSelected) {
   arduboy.print(text);
   
   if (isSelected) {
-    byte selectionOffset = 4;
+    byte selectionOffset = 3;
     arduboy.drawRoundRect(
       x - selectionOffset, 
       yPosition - selectionOffset, 
       textWidth + selectionOffset * 2, 
-      CHAR_HEIGHT + selectionOffset * 2, 
+      CHAR_HEIGHT + selectionOffset * 2 , 
       4); 
   }
+}
+
+void drawDialogBase() {
+  arduboy.fillRoundRect(10, 10, 112, 48, 4);
+  arduboy.setCursor(15, 15);
+  arduboy.setTextColor(BLACK);
+  arduboy.setTextBackground(WHITE);
+}
+
+void resetTextColor() {
+  arduboy.setTextBackground(BLACK);
+  arduboy.setTextColor(WHITE);
+}
+
+void debugFreeRam() {
+  Serial.print("Free RAM: ");
+  Serial.println(freeRam());
 }

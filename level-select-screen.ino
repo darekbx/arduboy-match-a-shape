@@ -1,5 +1,3 @@
-// Level select screen
-
 #define levelRectWidth 60
 #define levelRectHeigth 44
 #define levelCenterX 35
@@ -7,9 +5,18 @@
 #define levelRectPadding 10
 #define starYPosition 24
 
+short lastSolvedLevelIndex = 0;
 short levelSelection = 0;
 byte lockedLevelIndex = 0;
 bool isLockedDialogShow = false;
+
+void levelSelectScreen_setup() {
+  if (getLastSolvedLevelIndex() > 0) {
+    levelSelection = -getLastSolvedLevelIndex();
+  } else {
+    levelSelection = 0;
+  }
+}
 
 void levelSelectScreen_loop() {
   handleLevelSelectButtons();
@@ -26,7 +33,7 @@ void levelSelectScreen_loop() {
 
     short levelRectPosition = (levelIndex + levelSelection) * (levelRectWidth + levelRectPadding);
     drawLevelCard(levelRectPosition, levelIndex);
-    
+
     if (movesMade > 0) {
       drawStars(levelRectPosition, movesMade, selectedlevel);
     } else if (movesMade == 0 && isPreviousNotSolved) {
@@ -43,6 +50,8 @@ void levelSelectScreen_loop() {
         levelCenterX + levelRectPosition + 22, 
         levelCenterY + starYPosition, 
         padlock, ICON_SIZE, ICON_SIZE, WHITE);
+    } else {
+      drawEmptyStars(levelRectPosition);
     }
     
     if (movesMade == 0 && !isPreviousNotSolved) {
@@ -65,15 +74,9 @@ void drawLevelCard(short levelRectPosition, byte levelIndex) {
 }
 
 void drawLockedDialog() {
-  arduboy.fillRoundRect(10, 10, 112, 48, 4);
-  arduboy.setCursor(15, 15);
-  arduboy.setTextColor(BLACK);
-  arduboy.setTextBackground(WHITE);
-  
+  drawDialogBase();
   arduboy.print("Level is locked!");
-  
-  arduboy.setTextBackground(BLACK);
-  arduboy.setTextColor(WHITE);
+  resetTextColor();
 }
 
 void drawStars(short levelRectPosition, byte movesMade, game_level level) {  
@@ -96,6 +99,14 @@ void drawStars(short levelRectPosition, byte movesMade, game_level level) {
   arduboy.drawBitmap(starX + 3, starY, firstStar, ICON_SIZE, ICON_SIZE);
   arduboy.drawBitmap(starX + 22, starY, secondStar, ICON_SIZE, ICON_SIZE);
   arduboy.drawBitmap(starX + 41, starY, thirdStar, ICON_SIZE, ICON_SIZE);
+}
+
+void drawEmptyStars(short levelRectPosition) {  
+  short starX = levelCenterX + levelRectPosition;
+  byte starY = levelCenterY + starYPosition;
+  arduboy.drawBitmap(starX + 3, starY, starEmpty, ICON_SIZE, ICON_SIZE);
+  arduboy.drawBitmap(starX + 22, starY, starEmpty, ICON_SIZE, ICON_SIZE);
+  arduboy.drawBitmap(starX + 41, starY, starEmpty, ICON_SIZE, ICON_SIZE);
 }
 
 void handleLevelSelectButtons() {
@@ -122,7 +133,7 @@ void handleLevelSelectButtons() {
     }
     
     prepareLevel(abs(levelSelection));
-    currentScreen = game_screen;
+    switchToGameScreen();
   }
   
   // Level selection movement

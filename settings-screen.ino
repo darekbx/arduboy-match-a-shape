@@ -1,20 +1,20 @@
-// Settings screen
-
 #define settingsItems 4
+
 byte settingsSelection = 0;
-bool leftSettings = false;
 boolean isResetMemoryDialogShown = false;
 boolean isResetDoneDialogShown = false;
+boolean isCreditsDialogShown = false;
 boolean resetSkipFrame = false;
 
-void settingsScreen_loop() {
-  if (leftSettings) {
-    settingsSelection = 0;
-    leftSettings = false;
-  }
+void settingsScreen_setup() {
+  settingsSelection = 0;
+}
 
+void settingsScreen_loop() {
   if (isResetMemoryDialogShown) {
     handleResetMemoryDialogButtons();
+  } else if (isCreditsDialogShown) {
+    handleCreditDialogButtons();
   } else {
     handleSettingsButtons();
   }
@@ -38,6 +38,8 @@ void settingsScreen_loop() {
 
   if (isResetMemoryDialogShown) {
     drawResetMemoryDialog();
+  } else if (isCreditsDialogShown) {
+    showCreditsDialog();
   } else if (isResetDoneDialogShown) {
     // display done dialog for 2 seconds
     drawDoneDialog();
@@ -46,24 +48,33 @@ void settingsScreen_loop() {
 
 void confirmSettingsSelection() {
   if (settingsSelection == 0) {
-    bool currentAudioState = isAudioOn();
-    saveAudioState(!currentAudioState);
+    changeAudioState();
   } else if (settingsSelection == 1) {
     isResetMemoryDialogShown = true;
   } else if (settingsSelection == 2) {
-    
-    // leftSettings = true;
+    isCreditsDialogShown = true;
   } else if (settingsSelection == 3) {
     currentScreen = menu_screen;
-    leftSettings = true;
   }
 }
 
+void changeAudioState() {
+  bool currentAudioState = isAudioOn();
+  saveAudioState(!currentAudioState);
+}
+
+void showCreditsDialog() {
+  drawDialogBase();
+  
+  arduboy.print("Credits: ");
+  arduboy.setCursor(15, 26);
+  arduboy.print("darekbx @2021");
+  
+  resetTextColor();
+}
+
 void drawResetMemoryDialog() {
-  arduboy.fillRoundRect(10, 10, 112, 48, 4);
-  arduboy.setCursor(15, 15);
-  arduboy.setTextColor(BLACK);
-  arduboy.setTextBackground(WHITE);
+  drawDialogBase();
   
   arduboy.print("Reset game?");
   arduboy.setCursor(15, 44);
@@ -71,21 +82,24 @@ void drawResetMemoryDialog() {
   arduboy.setCursor(66, 44);
   arduboy.print("No(B)");
   
-  arduboy.setTextBackground(BLACK);
-  arduboy.setTextColor(WHITE);
+  resetTextColor();
 }
 
 void drawDoneDialog() {
-  arduboy.fillRoundRect(10, 10, 112, 48, 4);
-  arduboy.setCursor(15, 15);
-  arduboy.setTextColor(BLACK);
-  arduboy.setTextBackground(WHITE);
+  drawDialogBase();
 
   arduboy.print("Game state was");
   arduboy.setCursor(15, 24);
   arduboy.print("reset.");
-  arduboy.setTextBackground(BLACK);
-  arduboy.setTextColor(WHITE);
+
+  resetTextColor();
+}
+
+void handleCreditDialogButtons() {
+  // A and B button is closing
+  if (arduboy.justPressed(A_BUTTON) || arduboy.justPressed(B_BUTTON)) {
+    isCreditsDialogShown = false;
+  }
 }
 
 void handleResetMemoryDialogButtons() {

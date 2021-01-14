@@ -1,14 +1,12 @@
-// Game storage
-
 /* 
  * EEPROM memory structure 
- * [0] - Solved levels count
+ * [0] - Solved level index
  * [1] - Audio state, 0 - off, 1 - on
  * [level_index + LEVEL_ADDRESS_OFFSET] - made steps count for each level
  * 
  * if memory address for level_index is -1 or 0, then level is not solved
  */
-
+#define SOLVED_LEVEL_INDEX_ADDRESS 0
 #define LEVEL_ADDRESS_OFFSET 1
 #define AUDIO_STATE_ADDRESS 1
 
@@ -19,9 +17,18 @@ void clearMemory() {
 }
 
 void resetGame() {
+  EEPROM.write(SOLVED_LEVEL_INDEX_ADDRESS, 0);
   for (int levelIndex = LEVEL_ADDRESS_OFFSET; levelIndex <= LEVELS_COUNT; levelIndex++) {
     EEPROM.write(levelIndex + 1, 0);
   }
+}
+
+void setSolvedLevel(byte solvedLevelIndex) {
+  saveValue(SOLVED_LEVEL_INDEX_ADDRESS, solvedLevelIndex);
+}
+
+byte getLastSolvedLevelIndex() {
+  return readValue(SOLVED_LEVEL_INDEX_ADDRESS);
 }
 
 bool isAudioOn() {
@@ -48,4 +55,10 @@ void saveValue(int address, byte number) {
 
 byte readValue(int address) {
   return EEPROM.read(address);
+}
+
+int freeRam() {
+  extern int __heap_start, *__brkval;
+  int v;
+  return (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval);
 }
