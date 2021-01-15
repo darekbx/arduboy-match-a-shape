@@ -1,9 +1,9 @@
 #define levelRectWidth 60
-#define levelRectHeigth 44
+#define levelRectHeigth 50
 #define levelCenterX 35
-#define levelCenterY 16
+#define levelCenterY 14
 #define levelRectPadding 10
-#define starYPosition 24
+#define starYPosition 29
 
 short lastSolvedLevelIndex = 0;
 short levelSelection = 0;
@@ -18,6 +18,8 @@ void levelSelectScreen_setup() {
   }
 }
 
+bool a = false;
+
 void levelSelectScreen_loop() {
   handleLevelSelectButtons();
 
@@ -26,13 +28,17 @@ void levelSelectScreen_loop() {
   game_level selectedlevel;
   bool isPreviousNotSolved = false;
   bool hasLockedLevel = false;
- 
-  for (byte levelIndex = 0; levelIndex < LEVELS_COUNT; levelIndex++) {
+
+  // Render only selected level and two on the left and on the right
+  short startIndex = max(0, abs(levelSelection) - 2);
+  short endIndex = min(LEVELS_COUNT - 1, abs(levelSelection) + 2);
+  
+  for (byte levelIndex = startIndex; levelIndex <= endIndex; levelIndex++) {
     memcpy_P(&selectedlevel, &levels[levelIndex], sizeof(game_level));
     byte movesMade = readLevelMoves(levelIndex + 1);
 
     short levelRectPosition = (levelIndex + levelSelection) * (levelRectWidth + levelRectPadding);
-    drawLevelCard(levelRectPosition, levelIndex);
+    drawLevelCard(levelRectPosition, levelIndex, movesMade);
 
     if (movesMade > 0) {
       drawStars(levelRectPosition, movesMade, selectedlevel);
@@ -64,13 +70,27 @@ void levelSelectScreen_loop() {
   }
 }
 
-void drawLevelCard(short levelRectPosition, byte levelIndex) {
+void drawLevelCard(short levelRectPosition, byte levelIndex, byte movesMade) {
   arduboy.drawRoundRect(levelCenterX + levelRectPosition, levelCenterY, levelRectWidth, levelRectHeigth, 6);
+  short xPosition1Row = levelCenterX + levelRectPosition + 5;
+  short xPosition2Row = levelCenterX + levelRectPosition + 34;
+  byte yPosition1Row = levelCenterY + 4;
+  byte yPosition2Row = levelCenterY + 17;
+
+  arduboy.fillRoundRect(levelCenterX + levelRectPosition, levelCenterY, levelRectWidth, 10, 6);
+  arduboy.fillRect(levelCenterX + levelRectPosition, levelCenterY + 4, levelRectWidth, 10);
+  arduboy.setCursor(xPosition1Row, yPosition1Row);
   
-  arduboy.setCursor(levelCenterX + levelRectPosition + 4, levelCenterY + 6);
-  arduboy.print("Level ");
-  arduboy.setCursor(levelCenterX + levelRectPosition + 40, levelCenterY + 6);
-  arduboy.print(String(levelIndex + 1));
+  arduboy.setTextColor(BLACK);
+  arduboy.setTextBackground(WHITE);
+  arduboy.print("Level " + String(levelIndex + 1));
+  arduboy.setTextColor(WHITE);
+  arduboy.setTextBackground(BLACK);
+
+  if (movesMade > 0) {
+    arduboy.setCursor(xPosition1Row, yPosition2Row);
+    arduboy.print("Moves " + String(movesMade));
+  }
 }
 
 void drawLockedDialog() {

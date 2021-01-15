@@ -1,6 +1,6 @@
 
-#define LINES_COUNT 14
-#define SCROLL_LIMIT 78
+#define LINES_COUNT 16
+#define SCROLL_LIMIT 95
 #define SCROLL_STEP 4
 
 String howToPlayText[] = {
@@ -14,6 +14,8 @@ String howToPlayText[] = {
   "B button and use",
   "arrows to change",
   "selected part.",
+  "Button A is used to",
+  "exit from the game.",
   "",
   "Fewer movements you",
   "make, the more",

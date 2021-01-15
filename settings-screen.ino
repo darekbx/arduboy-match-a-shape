@@ -67,8 +67,10 @@ void showCreditsDialog() {
   drawDialogBase();
   
   arduboy.print("Credits: ");
-  arduboy.setCursor(15, 26);
+  arduboy.setCursor(7, 26);
   arduboy.print("darekbx @2021");
+  arduboy.setCursor(7, 37);
+  arduboy.print(VERSION);
   
   resetTextColor();
 }
@@ -77,9 +79,9 @@ void drawResetMemoryDialog() {
   drawDialogBase();
   
   arduboy.print("Reset game?");
-  arduboy.setCursor(15, 44);
+  arduboy.setCursor(7, 48);
   arduboy.print("Yes(A)");
-  arduboy.setCursor(66, 44);
+  arduboy.setCursor(58, 48);
   arduboy.print("No(B)");
   
   resetTextColor();

@@ -1,6 +1,7 @@
 #include <Arduboy2.h>
 #include "game-assets.h"
 
+#define VERSION "v1.0"
 #define SERIAL_ENABLED false
 #define ALL_LEVELS_UNLOCKED false
 
@@ -110,8 +111,8 @@ void drawCenterText(String text, int yPosition, boolean isSelected) {
 }
 
 void drawDialogBase() {
-  arduboy.fillRoundRect(10, 10, 112, 48, 4);
-  arduboy.setCursor(15, 15);
+  arduboy.fillRoundRect(2, 4, 124, 56, 4);
+  arduboy.setCursor(7, 9);
   arduboy.setTextColor(BLACK);
   arduboy.setTextBackground(WHITE);
 }

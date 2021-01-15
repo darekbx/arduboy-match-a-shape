@@ -121,10 +121,10 @@ void drawShape(byte shape[], byte levelSize, byte left, byte top, byte cellSize,
 void drawSolvedDialog() {
   drawDialogBase();
   
-  arduboy.print("Solved!");
+  drawCenterText("Solved in " + String(movesMade) + " moves!", 12, false);
   
-  short starX = 15;
-  byte starY = 32;
+  short starX = 37;
+  byte starY = 30;
 
   byte starsNumber;
 
@@ -139,12 +139,11 @@ void drawSolvedDialog() {
   char *secondStar = starsNumber > 1 ? starFilled : starEmpty;
   char *thirdStar = starsNumber > 2 ? starFilled : starEmpty;
     
-  arduboy.drawBitmap(starX + 3, starY, starFilled, ICON_SIZE, ICON_SIZE, BLACK);
-  arduboy.drawBitmap(starX + 22, starY, secondStar, ICON_SIZE, ICON_SIZE, BLACK);
-  arduboy.drawBitmap(starX + 41, starY, thirdStar, ICON_SIZE, ICON_SIZE, BLACK);
+  arduboy.drawBitmap(starX, starY, starFilled, ICON_SIZE, ICON_SIZE, BLACK);
+  arduboy.drawBitmap(starX + 19, starY, secondStar, ICON_SIZE, ICON_SIZE, BLACK);
+  arduboy.drawBitmap(starX + 38, starY, thirdStar, ICON_SIZE, ICON_SIZE, BLACK);
   
-  arduboy.setTextBackground(BLACK);
-  arduboy.setTextColor(WHITE);
+  resetTextColor();
 }
 
 void rotateSelection() {
@@ -174,9 +173,9 @@ void drawExitDialog() {
   drawDialogBase();
   
   arduboy.print("Exit level?");
-  arduboy.setCursor(15, 44);
+  arduboy.setCursor(7, 48);
   arduboy.print("Yes(A)");
-  arduboy.setCursor(66, 44);
+  arduboy.setCursor(58, 48);
   arduboy.print("No(B)");
   
   arduboy.setTextBackground(BLACK);
@@ -222,8 +221,7 @@ void handleGameButtons() {
       if (isShapeCorrect()) {
         isSolved = true;
         arduboy.digitalWriteRGB(GREEN_LED, RGB_ON);
-        setSolvedLevel(actualLevelIndex + 1);
-        saveLevelMoves(actualLevelIndex + 1, movesMade);
+        saveGameResult();
       } else {
         movesMade = movesMade + 1;
       }
@@ -242,6 +240,20 @@ void handleGameButtons() {
   }
   if (arduboy.justPressed(DOWN_BUTTON) && ySelect < maxSelect) {
     ySelect = ySelect + 1;
+  }
+}
+
+void saveGameResult() {
+  byte levelIndex = actualLevelIndex + 1;
+  byte savedLevelMoves = readLevelMoves(levelIndex);
+  byte savedSolvedLevel = getLastSolvedLevelIndex();
+  
+  if (levelIndex > savedSolvedLevel){
+    setSolvedLevel(levelIndex);
+  }
+
+  if (movesMade < savedLevelMoves) {
+    saveLevelMoves(levelIndex, movesMade);
   }
 }
 
