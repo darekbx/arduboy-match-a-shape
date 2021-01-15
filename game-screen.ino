@@ -218,12 +218,12 @@ void handleGameButtons() {
       playRotationSound();
       rotateSelection();
   
+      movesMade = movesMade + 1;
+        
       if (isShapeCorrect()) {
         isSolved = true;
         arduboy.digitalWriteRGB(GREEN_LED, RGB_ON);
         saveGameResult();
-      } else {
-        movesMade = movesMade + 1;
       }
     }
   }
@@ -248,11 +248,11 @@ void saveGameResult() {
   byte savedLevelMoves = readLevelMoves(levelIndex);
   byte savedSolvedLevel = getLastSolvedLevelIndex();
   
-  if (levelIndex > savedSolvedLevel){
+  if (savedSolvedLevel <= 0 || levelIndex > savedSolvedLevel){
     setSolvedLevel(levelIndex);
   }
 
-  if (movesMade < savedLevelMoves) {
+  if (savedLevelMoves <= 0 || movesMade < savedLevelMoves) {
     saveLevelMoves(levelIndex, movesMade);
   }
 }
