@@ -3,23 +3,23 @@
 #define SCROLL_LIMIT 95
 #define SCROLL_STEP 4
 
-String howToPlayText[] = {
-  "Each level contains",
-  "a shape which should",
-  "be matched to the",
-  "smaller shape on the",
-  "right, by rotating",
-  "selected part.",
-  "To rotate press",
-  "B button and use",
-  "arrows to change",
-  "selected part.",
-  "Button A is used to",
-  "exit from the game.",
-  "",
-  "Fewer movements you",
-  "make, the more",
-  "stars you get!"
+const char* const howToPlayText[] PROGMEM = {
+  howToPlayLine1,
+  howToPlayLine2,
+  howToPlayLine3,
+  howToPlayLine4,
+  howToPlayLine5,
+  howToPlayLine6,
+  howToPlayLine7,
+  howToPlayLine8,
+  howToPlayLine9,
+  howToPlayLine10,
+  howToPlayLine11,
+  howToPlayLine12,
+  howToPlayLine13,
+  howToPlayLine14,
+  howToPlayLine15,
+  howToPlayLine16
 };
 
 short scrollPosition = 0;
@@ -30,10 +30,12 @@ void howToPlayScreen_setup() {
 
 void howToPlayScreen_loop() {
   handleHowToPlayButtons();
+  char tBuffer[22];
   
   for (byte i = 0; i < LINES_COUNT; i++) {
     arduboy.setCursor(0, (i * 9) + 17 - scrollPosition);
-    arduboy.print(howToPlayText[i]);
+    String line = strcpy_P(tBuffer, (char*)pgm_read_word(&(howToPlayText[i])));
+    arduboy.print(line);
   }
 
   arduboy.fillRect(0, 0, 128, 16, BLACK);

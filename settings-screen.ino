@@ -80,20 +80,14 @@ void drawResetMemoryDialog() {
   
   arduboy.print("Reset game?");
   arduboy.setCursor(7, 48);
-  arduboy.print("Yes(A)");
-  arduboy.setCursor(58, 48);
-  arduboy.print("No(B)");
+  arduboy.print("Yes(A)  No(B)");
   
   resetTextColor();
 }
 
 void drawDoneDialog() {
   drawDialogBase();
-
-  arduboy.print("Game state was");
-  arduboy.setCursor(15, 24);
-  arduboy.print("reset.");
-
+  arduboy.print("Game was reset.");
   resetTextColor();
 }
 

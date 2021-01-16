@@ -3,15 +3,11 @@
 
 #define VERSION "v1.0"
 #define SERIAL_ENABLED false
+#define ONE_ROTATION_TO_SOLVE false
 #define ALL_LEVELS_UNLOCKED false
 
 Arduboy2 arduboy;
 BeepPin1 beep;
-
-/*
- * TODO:
- *  - add boot logo
- */
 
 enum matchTheShapeScreen {
   menu_screen,

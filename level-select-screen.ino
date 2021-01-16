@@ -11,14 +11,13 @@ byte lockedLevelIndex = 0;
 bool isLockedDialogShow = false;
 
 void levelSelectScreen_setup() {
+  lockedLevelIndex = 0;
   if (getLastSolvedLevelIndex() > 0) {
-    levelSelection = -getLastSolvedLevelIndex();
+    levelSelection = max(-getLastSolvedLevelIndex(), -(LEVELS_COUNT - 1));
   } else {
     levelSelection = 0;
   }
 }
-
-bool a = false;
 
 void levelSelectScreen_loop() {
   handleLevelSelectButtons();
@@ -95,6 +94,7 @@ void drawLevelCard(short levelRectPosition, byte levelIndex, byte movesMade) {
 
 void drawLockedDialog() {
   drawDialogBase();
+  arduboy.setCursor(9, 11);
   arduboy.print("Level is locked!");
   resetTextColor();
 }
@@ -145,8 +145,7 @@ void handleLevelSelectButtons() {
     if (isLockedDialogShow) {
       isLockedDialogShow = false;
       return;
-    } 
-
+    }
     if (lockedLevelIndex > 0 && abs(levelSelection) >= lockedLevelIndex) {
       isLockedDialogShow = true;
       return;

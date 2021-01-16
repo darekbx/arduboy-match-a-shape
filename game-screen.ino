@@ -8,6 +8,7 @@ byte ySelect;
 byte maxSelect;
 byte movesMade;
 boolean isSolved = false;
+boolean isGameCompleted = false;
 boolean isConfirmDialogShown = false;
 
 #define rotationTone 200.00
@@ -22,10 +23,11 @@ void gameScreen_setup() {
   ySelect = 0;
   movesMade = 0;
   isSolved = false;
+  isGameCompleted = false;
 }
 
 void gameScreen_loop() {
-  arduboy.digitalWriteRGB(GREEN_LED, RGB_OFF);
+  //arduboy.digitalWriteRGB(GREEN_LED, RGB_OFF);
 
   drawLevel();
   drawLevelInfo();
@@ -33,6 +35,9 @@ void gameScreen_loop() {
   if (isSolved) {
     handleSolvedButtons();
     drawSolvedDialog();
+  } else if (isGameCompleted) {
+    handleGameCompletedButtons();
+    drawGameCompletedDialog();
   } else if (isConfirmDialogShown) {
     handleExitDialogButtons();
     drawExitDialog();
@@ -118,6 +123,13 @@ void drawShape(byte shape[], byte levelSize, byte left, byte top, byte cellSize,
   }
 }
 
+void drawGameCompletedDialog() {
+  drawDialogBase();
+  arduboy.setCursor(9, 11);
+  arduboy.print("Game is completed!");
+  resetTextColor();
+}
+
 void drawSolvedDialog() {
   drawDialogBase();
   
@@ -172,11 +184,10 @@ boolean isShapeCorrect() {
 void drawExitDialog() {
   drawDialogBase();
   
+  arduboy.setCursor(9, 11);
   arduboy.print("Exit level?");
-  arduboy.setCursor(7, 48);
-  arduboy.print("Yes(A)");
-  arduboy.setCursor(58, 48);
-  arduboy.print("No(B)");
+  arduboy.setCursor(9, 46);
+  arduboy.print("Yes(A)   No(B)");
   
   arduboy.setTextBackground(BLACK);
   arduboy.setTextColor(WHITE);
@@ -185,7 +196,18 @@ void drawExitDialog() {
 void handleSolvedButtons() {
   // A button is exiting to level select
   if (arduboy.justPressed(A_BUTTON) || arduboy.justPressed(B_BUTTON)) {
+    if (isGameCompleted) {
+      isSolved = false;
+    } else {
       switchToSelectLevelScreen();
+    }
+  }
+}
+
+void handleGameCompletedButtons() {
+  // A button is exiting to level select
+  if (arduboy.justPressed(A_BUTTON) || arduboy.justPressed(B_BUTTON)) {
+    switchToSelectLevelScreen();
   }
 }
 
@@ -220,9 +242,10 @@ void handleGameButtons() {
   
       movesMade = movesMade + 1;
         
-      if (isShapeCorrect()) {
+      if (ONE_ROTATION_TO_SOLVE || isShapeCorrect()) {
         isSolved = true;
-        arduboy.digitalWriteRGB(GREEN_LED, RGB_ON);
+        isGameCompleted = actualLevelIndex + 1 == LEVELS_COUNT;
+        //arduboy.digitalWriteRGB(GREEN_LED, RGB_ON);
         saveGameResult();
       }
     }

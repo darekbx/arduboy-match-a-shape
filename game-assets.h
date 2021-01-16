@@ -60,6 +60,23 @@ PROGMEM const unsigned char gameLogo[] = {
   0x06, 0x07, 0x07, 0x03, 0x00, 0x01, 0x03, 0x07, 0x07, 0x06, 0x06, 0x06, 0x06, 0x02, 0x00, 0x00
 };
 
+const char howToPlayLine1[] PROGMEM = "Each level contains";
+const char howToPlayLine2[] PROGMEM = "a shape which should";
+const char howToPlayLine3[] PROGMEM = "be matched to the";
+const char howToPlayLine4[] PROGMEM = "smaller shape on the";
+const char howToPlayLine5[] PROGMEM = "right, by rotating";
+const char howToPlayLine6[] PROGMEM = "selected part.";
+const char howToPlayLine7[] PROGMEM = "To rotate press";
+const char howToPlayLine8[] PROGMEM = "B button and use";
+const char howToPlayLine9[] PROGMEM = "arrows to change";
+const char howToPlayLine10[] PROGMEM = "selected part.";
+const char howToPlayLine11[] PROGMEM = "Button A is used to";
+const char howToPlayLine12[] PROGMEM = "exit from the game.";
+const char howToPlayLine13[] PROGMEM = "";
+const char howToPlayLine14[] PROGMEM = "Fewer movements you";
+const char howToPlayLine15[] PROGMEM = "make, the more";
+const char howToPlayLine16[] PROGMEM = "stars you get!";
+
 /*
  * Cell kind:
  * 0 - solid
@@ -343,7 +360,7 @@ const struct game_level levels[LEVELS_COUNT] PROGMEM = {
   },
   // Level 41
   {
-    { 2,1,1,3,1,1,3,1,1,3,1,1,1,1,1,3,1,1,2,1,1,3,1,1,2 },
+    { 2,1,1,3,1,1,2,1,1,3,1,1,1,1,1,3,1,1,2,1,1,3,1,1,2 },
     { 1,1,2,2,1,3,1,1,1,1,3,1,1,2,1,3,1,1,1,3,1,1,1,2,1 },
     { 19,24 },
     5
