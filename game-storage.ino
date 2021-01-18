@@ -1,24 +1,30 @@
 /* 
  * EEPROM memory structure 
- * [0] - Solved level index
- * [1] - Audio state, 0 - off, 1 - on
+ * [0] - MEMORY_INITIALIZED_ADDRESS
+ * [1] - Solved level index
+ * [2] - Audio state, 0 - off, 1 - on
  * [level_index + LEVEL_ADDRESS_OFFSET] - made steps count for each level
  * 
  * if memory address for level_index is -1 or 0, then level is not solved
  */
-#define SOLVED_LEVEL_INDEX_ADDRESS 0
-#define LEVEL_ADDRESS_OFFSET 1
-#define AUDIO_STATE_ADDRESS 1
+#define MEMORY_INITIALIZED_ADDRESS 0
+#define SOLVED_LEVEL_INDEX_ADDRESS 1
+#define LEVEL_ADDRESS_OFFSET 2
+#define AUDIO_STATE_ADDRESS 2
+
+#define MEMORY_INITIALIZED_FLAG_VALUE 123
 
 void initMemory() {
-  //if (EEPROM.read(SOLVED_LEVEL_INDEX_ADDRESS) == -1) {
+  if (EEPROM.read(MEMORY_INITIALIZED_ADDRESS) != MEMORY_INITIALIZED_FLAG_VALUE
+      && EEPROM.read(SOLVED_LEVEL_INDEX_ADDRESS) != 0) {
     clearMemory();
-  //}
+    EEPROM.write(MEMORY_INITIALIZED_ADDRESS, MEMORY_INITIALIZED_FLAG_VALUE);
+  }
 }
 
 void clearMemory() {
   byte memorySize = 1 /* SOLVED_LEVEL_INDEX_ADDRESS */ + 1 /* AUDIO_STATE_ADDRESS */ + LEVELS_COUNT;
-  for (byte i = 0; i < memorySize; i++) {
+  for (byte i = 1; i <= memorySize; i++) {
     EEPROM.write(i, 0);
   }
 }
