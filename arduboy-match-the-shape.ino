@@ -27,6 +27,8 @@ void setup() {
     debugFreeRam();
     #endif
 
+  initMemory();
+
   arduboy.boot();
   arduboy.display();
   arduboy.flashlight();

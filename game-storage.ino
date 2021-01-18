@@ -10,8 +10,15 @@
 #define LEVEL_ADDRESS_OFFSET 1
 #define AUDIO_STATE_ADDRESS 1
 
+void initMemory() {
+  if (EEPROM.read(SOLVED_LEVEL_INDEX_ADDRESS) == -1) {
+    clearMemory();
+  }
+}
+
 void clearMemory() {
-  for (int i = 0; i < EEPROM.length(); i++) {
+  byte memorySize = 1 /* SOLVED_LEVEL_INDEX_ADDRESS */ + 1 /* AUDIO_STATE_ADDRESS */ + LEVELS_COUNT;
+  for (byte i = 0; i < memorySize; i++) {
     EEPROM.write(i, 0);
   }
 }
