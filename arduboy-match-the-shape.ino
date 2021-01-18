@@ -1,7 +1,7 @@
 #include <Arduboy2.h>
 #include "game-assets.h"
 
-#define VERSION "v1.0"
+#define VERSION "v1.1"
 #define SERIAL_ENABLED false
 #define ONE_ROTATION_TO_SOLVE false
 #define ALL_LEVELS_UNLOCKED false
