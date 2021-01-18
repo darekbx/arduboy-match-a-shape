@@ -11,9 +11,9 @@
 #define AUDIO_STATE_ADDRESS 1
 
 void initMemory() {
-  if (EEPROM.read(SOLVED_LEVEL_INDEX_ADDRESS) == -1) {
+  //if (EEPROM.read(SOLVED_LEVEL_INDEX_ADDRESS) == -1) {
     clearMemory();
-  }
+  //}
 }
 
 void clearMemory() {
